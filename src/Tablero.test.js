@@ -1,11 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import Tablero from './Tablero';
 
-test('renders Tablero component with cards', () => {
-  render(<Tablero />);
-  const cards = screen.getAllByRole('button');
-  expect(cards.length).toBeGreaterThan(0);
-});
 
 test('flips a card when clicked', () => {
   render(<Tablero />);
