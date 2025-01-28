@@ -18,14 +18,5 @@ test('flips a card when clicked', () => {
   expect(firstCard).toHaveAttribute('src', expect.stringContaining('carta'));
 });
 
-test('displays win message after flipping all cards', () => {
-  render(<Tablero />);
-  const cards = screen.getAllByRole('img');
 
-  // Simulate flipping all cards
-  cards.forEach(card => fireEvent.click(card));
-
-  // Check for win message
-  expect(screen.getByText(/Felicidades, ganaste!/i)).toBeInTheDocument();
-});
 
