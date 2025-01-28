@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Tablero from './Tablero';
 import Card from './Card';
 import Mensaje from './Mensaje';
@@ -25,50 +25,54 @@ jest.mock('./Mensaje', () => {
 });
 
 describe('Tablero Component', () => {
-  it('renders without crashing', () => {
-    render(<Tablero />);
-    expect(screen.getByText(/Memory Game/i)).toBeInTheDocument();
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('flips a card when clicked', () => {
+  it('renders initial cards', async () => {
     render(<Tablero />);
-    const firstCard = screen.getByTestId('card-0');
     
-    // Initially card is hidden
+    // Wait for the card elements to render
+    await waitFor(() => {
+      const cards = screen.getAllByTestId(/^card-/);
+      expect(cards.length).toBe(8); // Ensure all cards render
+    });
+  });
+
+  it('flips a card when clicked', async () => {
+    render(<Tablero />);
+    const firstCard = await screen.findByTestId('card-0');
+
     expect(firstCard.style.background).toBe('hidden');
 
     // Flip the card
     fireEvent.click(firstCard);
 
-    // Verify card is flipped
+    // Ensure card is flipped
     expect(firstCard.style.background).toBe('flipped');
   });
 
-  it('shows a win message when all cards are matched', () => {
+  it('shows a win message when all cards are matched', async () => {
     render(<Tablero />);
+    const cards = await screen.findAllByTestId(/^card-/);
 
-    // Simulate flipping all cards (mocked flipping)
-    const cards = screen.getAllByTestId(/^card-/);
-    act(() => {
-      cards.forEach(card => fireEvent.click(card));
-    });
+    // Simulate flipping all cards
+    cards.forEach(card => fireEvent.click(card));
 
     // Verify win message
-    expect(screen.getByTestId('win-message')).toBeInTheDocument();
+    const winMessage = await screen.findByTestId('win-message');
+    expect(winMessage).toBeInTheDocument();
     expect(screen.getByText(/Felicidades, ganaste!/i)).toBeInTheDocument();
   });
 
-  it('restarts the game when the win message button is clicked', () => {
+  it('restarts the game when the win message button is clicked', async () => {
     render(<Tablero />);
-    
-    // Simulate winning condition
-    const cards = screen.getAllByTestId(/^card-/);
-    act(() => {
-      cards.forEach(card => fireEvent.click(card));
-    });
+
+    const cards = await screen.findAllByTestId(/^card-/);
+    cards.forEach(card => fireEvent.click(card));
 
     // Click the restart button
-    fireEvent.click(screen.getByText('Restart'));
+    fireEvent.click(await screen.findByText('Restart'));
 
     // Assert the message disappears after restart
     expect(screen.queryByTestId('win-message')).not.toBeInTheDocument();
