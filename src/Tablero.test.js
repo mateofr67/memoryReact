@@ -3,29 +3,29 @@ import Tablero from './Tablero';
 
 test('renders Tablero with cards', () => {
   render(<Tablero />);
-  const cards = screen.getAllByTestId(/^card-/); // Assuming each card has data-testid="card-{index}"
-  expect(cards.length).toBeGreaterThan(0);
+  const cardElements = screen.getAllByRole('img'); // Assuming the cards render as images
+  expect(cardElements.length).toBeGreaterThan(0);
 });
 
 test('flips a card when clicked', () => {
   render(<Tablero />);
-  const firstCard = screen.getAllByTestId(/^card-/)[0];
+  const firstCard = screen.getAllByRole('img')[0];
 
   // Simulate flipping the card
   fireEvent.click(firstCard);
 
-  // Check for some visual or state change (replace with a real assertion)
-  expect(firstCard).not.toHaveStyle('background: hidden');
+  // We expect some state or visual change; placeholder logic below
+  expect(firstCard).toHaveAttribute('src', expect.stringContaining('carta'));
 });
 
-test('shows win message after flipping all cards', () => {
+test('displays win message after flipping all cards', () => {
   render(<Tablero />);
-  const cards = screen.getAllByTestId(/^card-/);
+  const cards = screen.getAllByRole('img');
 
-  cards.forEach(card => fireEvent.click(card)); // Simulate flipping all cards
+  // Simulate flipping all cards
+  cards.forEach(card => fireEvent.click(card));
 
-  const winMessage = screen.getByText(/Felicidades, ganaste!/i);
-  expect(winMessage).toBeInTheDocument();
+  // Check for win message
+  expect(screen.getByText(/Felicidades, ganaste!/i)).toBeInTheDocument();
 });
-
 
